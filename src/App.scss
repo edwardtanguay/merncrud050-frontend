@@ -27,6 +27,18 @@ body {
 		color: rgb(209, 168, 85);
 	}
 
+	.userInfo {
+		color: rgb(235, 161, 13);
+		margin-bottom: 1rem;
+		margin-top: -.7rem;
+		span {
+			background: #222;
+			padding: .5rem;
+			border-radius: .3rem;
+			border: 1px solid #444;
+		}
+	}
+
 	nav {
 		background-color: #222;
 		padding: .5rem;

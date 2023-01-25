@@ -8,6 +8,8 @@ import {
 	ILoginForm,
 	blankLoginForm,
 	ILoginFields,
+	IUser,
+	blankUser,
 } from './interfaces';
 import * as tools from './tools';
 
@@ -37,6 +39,7 @@ interface IAppContext {
 	handleSaveNewBook: () => void;
 	loginForm: ILoginForm;
 	changeLoginFormField: (fieldIdCode: string, value: string) => void;
+	currentUser: IUser;
 }
 
 interface IAppProvider {
@@ -54,6 +57,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 	const [isAdding, setIsAdding] = useState(false);
 	const [newBook, setNewBook] = useState<IOriginalEditFields>(blankNewBook);
 	const [loginForm, setLoginForm] = useState<ILoginForm>(blankLoginForm);
+	const [currentUser, setCurrentUser] = useState<IUser>(blankUser);
 
 	const loadBooks = () => {
 		(async () => {
@@ -83,14 +87,12 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 	useEffect(() => {
 		(async () => {
 			try {
-				const user = (
+				const currentUser = (
 					await axios.get(`${backendUrl}/get-current-user`, {
 						withCredentials: true,
 					})
 				).data;
-				if (user === 'admin') {
-					setAdminIsLoggedIn(true);
-				}
+				setCurrentUser(currentUser);
 			} catch (e: any) {
 				console.log(`ERROR: ${e.message}`);
 			}
@@ -130,7 +132,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 					withCredentials: true,
 				}
 			);
-			console.log(response.data);
+			setCurrentUser(response.data);
 		} catch (e: any) {
 			console.log(`ERROR: ${e.message}`);
 		}
@@ -288,6 +290,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 				handleSaveNewBook,
 				loginForm,
 				changeLoginFormField,
+				currentUser
 			}}
 		>
 			{children}

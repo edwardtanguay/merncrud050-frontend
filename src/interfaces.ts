@@ -40,3 +40,19 @@ export const blankLoginForm: ILoginForm = {
 	},
 	message: ''
 }
+
+export interface IUser {
+	_id: string,
+	username: string,
+	firstName: string,
+	lastName: string,
+	accessGroups: string[]
+}
+
+export const blankUser = {
+	_id: '',
+	username: '',
+	firstName: '',
+	lastName: '',
+	accessGroups: [],
+}
