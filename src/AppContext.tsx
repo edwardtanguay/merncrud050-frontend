@@ -1,15 +1,20 @@
 import { useState, useEffect } from 'react';
 import { createContext } from 'react';
 import axios from 'axios';
-import { IBook, IOriginalEditFields, blankNewBook } from './interfaces';
+import {
+	IBook,
+	IOriginalEditFields,
+	blankNewBook,
+	ILoginForm,
+	blankLoginForm,
+	ILoginFields,
+} from './interfaces';
 import * as tools from './tools';
 
 interface IAppContext {
 	appTitle: string;
 	books: IBook[];
-	loginAsAdmin: (onSuccess: () => void, onFailure: () => void) => void;
-	password: string;
-	setPassword: (password: string) => void;
+	attemptToLogUserIn: () => void;
 	adminIsLoggedIn: boolean;
 	logoutAsAdmin: () => void;
 	handleDeleteBook: (book: IBook) => void;
@@ -30,6 +35,8 @@ interface IAppContext {
 		value: string
 	) => void;
 	handleSaveNewBook: () => void;
+	loginForm: ILoginForm;
+	changeLoginFormField: (fieldIdCode: string, value: string) => void;
 }
 
 interface IAppProvider {
@@ -43,10 +50,10 @@ export const AppContext = createContext<IAppContext>({} as IAppContext);
 export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 	const [books, setBooks] = useState<IBook[]>([]);
 	const appTitle = 'Book Site';
-	const [password, setPassword] = useState('');
 	const [adminIsLoggedIn, setAdminIsLoggedIn] = useState(false);
 	const [isAdding, setIsAdding] = useState(false);
 	const [newBook, setNewBook] = useState<IOriginalEditFields>(blankNewBook);
+	const [loginForm, setLoginForm] = useState<ILoginForm>(blankLoginForm);
 
 	const loadBooks = () => {
 		(async () => {
@@ -85,7 +92,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 					setAdminIsLoggedIn(true);
 				}
 			} catch (e: any) {
-				console.log('GENERAL ERROR');
+				console.log(`ERROR: ${e.message}`);
 			}
 		})();
 	}, []);
@@ -108,15 +115,13 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 		setBooks([...books]);
 	};
 
-	const loginAsAdmin = async (
-		onSuccess: () => void,
-		onFailure: () => void
-	) => {
+	const attemptToLogUserIn = async () => {
 		try {
-			await axios.post(
+			const response = await axios.post(
 				`${backendUrl}/login`,
 				{
-					password,
+					username: loginForm.fields.username,
+					password: loginForm.fields.password,
 				},
 				{
 					headers: {
@@ -125,20 +130,10 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 					withCredentials: true,
 				}
 			);
-			setAdminIsLoggedIn(true);
-			resetAllBooks();
-			onSuccess();
+			console.log(response.data);
 		} catch (e: any) {
-			switch (e.code) {
-				case 'ERR_BAD_REQUEST':
-					onFailure();
-					break;
-				default:
-					break;
-			}
-			setAdminIsLoggedIn(false);
+			console.log(`ERROR: ${e.message}`);
 		}
-		setPassword('');
 	};
 
 	const handleSaveEditBook = async (book: IBook) => {
@@ -268,14 +263,17 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 		}
 	};
 
+	const changeLoginFormField = (fieldIdCode: string, value: string) => {
+		loginForm.fields[fieldIdCode as keyof ILoginFields] = value;
+		setLoginForm({ ...loginForm });
+	};
+
 	return (
 		<AppContext.Provider
 			value={{
 				appTitle,
 				books,
-				loginAsAdmin,
-				password,
-				setPassword,
+				attemptToLogUserIn,
 				adminIsLoggedIn,
 				logoutAsAdmin,
 				handleDeleteBook,
@@ -288,6 +286,8 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 				newBook,
 				handleAddBookFieldChange,
 				handleSaveNewBook,
+				loginForm,
+				changeLoginFormField,
 			}}
 		>
 			{children}

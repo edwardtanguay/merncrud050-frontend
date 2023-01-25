@@ -22,3 +22,21 @@ export const blankNewBook: IOriginalEditFields = {
 	description: '',
 	language: ''
 }
+
+export interface ILoginFields {
+	username: string,
+	password: string
+}
+
+export interface ILoginForm {
+	fields: ILoginFields,
+	message: string
+}
+
+export const blankLoginForm: ILoginForm = {
+	fields: {
+		username: '',
+		password: ''
+	},
+	message: ''
+}
