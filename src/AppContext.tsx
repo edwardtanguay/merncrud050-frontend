@@ -18,7 +18,7 @@ interface IAppContext {
 	books: IBook[];
 	attemptToLogUserIn: (onSuccess: () => void, onFailure: () => void) => void;
 	adminIsLoggedIn: boolean;
-	logoutAsAdmin: () => void;
+	logUserOut: () => void;
 	handleDeleteBook: (book: IBook) => void;
 	handleBookFieldChange: (
 		fieldIdCode: string,
@@ -94,7 +94,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 				console.log(`ERROR: ${e.message}`);
 			}
 		})();
-	}
+	};
 
 	useEffect(() => {
 		loadBooks();
@@ -123,7 +123,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 	};
 
 	const attemptToLogUserIn = async (
-	onSuccess: () => void,
+		onSuccess: () => void,
 		onFailure: () => void
 	) => {
 		try {
@@ -219,7 +219,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 		setBooks([...books]);
 	};
 
-	const logoutAsAdmin = () => {
+	const logUserOut = () => {
 		(async () => {
 			try {
 				resetAllBooks();
@@ -291,7 +291,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 				books,
 				attemptToLogUserIn,
 				adminIsLoggedIn,
-				logoutAsAdmin,
+				logUserOut: logUserOut,
 				handleDeleteBook,
 				handleBookFieldChange,
 				handleEditBook,
@@ -305,7 +305,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 				loginForm,
 				changeLoginFormField,
 				currentUser,
-				currentUserIsInAccessGroup
+				currentUserIsInAccessGroup,
 			}}
 		>
 			{children}
