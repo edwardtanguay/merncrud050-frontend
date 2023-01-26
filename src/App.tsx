@@ -7,14 +7,22 @@ import { PageLogin } from './pages/PageLogin';
 import { PageLogout } from './pages/PageLogout';
 
 function App() {
-	const { adminIsLoggedIn, currentUser } = useContext(AppContext);
+	const { adminIsLoggedIn, currentUser, currentUserIsInAccessGroup } =
+		useContext(AppContext);
+
 	return (
 		<div className="App">
 			<h1>Book Site</h1>
-			<div className="userInfo">Logged in: <span>{currentUser.firstName} {currentUser.lastName} ({currentUser.accessGroups.join(', ')})</span></div>
+			<div className="userInfo">
+				Logged in:{' '}
+				<span>
+					{currentUser.firstName} {currentUser.lastName} (
+					{currentUser.accessGroups.join(', ')})
+				</span>
+			</div>
 			<nav>
 				<NavLink to="/books">Books</NavLink>
-				{adminIsLoggedIn ? (
+				{currentUserIsInAccessGroup('loggedInUsers') ? (
 					<NavLink to="/logout">Logout</NavLink>
 				) : (
 					<NavLink to="/login">Login</NavLink>
@@ -23,7 +31,7 @@ function App() {
 
 			<Routes>
 				<Route path="/books" element={<PageBooks />} />
-				{adminIsLoggedIn ? (
+				{currentUserIsInAccessGroup('loggedInUsers') ? (
 					<Route path="/logout" element={<PageLogout />} />
 				) : (
 					<Route path="/login" element={<PageLogin />} />

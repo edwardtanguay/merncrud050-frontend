@@ -1,6 +1,7 @@
 import { useContext, useRef } from 'react';
 import { AppContext } from '../AppContext';
 import { Helmet } from 'react-helmet';
+import { useNavigate } from 'react-router-dom';
 
 export const PageLogin = () => {
 	const {
@@ -9,6 +10,18 @@ export const PageLogin = () => {
 		loginForm,
 		changeLoginFormField
 	} = useContext(AppContext);
+
+	const navigate = useNavigate();
+
+	const attemptToLogUserInAndresponse = () => {
+		attemptToLogUserIn(
+			() => {
+				navigate('/');
+			},
+			() => {
+				console.log('it failed');
+			});
+	}
 
 	return (
 		<div className="page pageLogin">
@@ -34,7 +47,7 @@ export const PageLogin = () => {
 
 					<div className="buttonArea">
 						<div className="message"></div>
-						<button type="button" onClick={attemptToLogUserIn}>Submit</button>
+						<button type="button" onClick={attemptToLogUserInAndresponse}>Submit</button>
 					</div>
 				</fieldset>
 			</form>

@@ -16,7 +16,7 @@ import * as tools from './tools';
 interface IAppContext {
 	appTitle: string;
 	books: IBook[];
-	attemptToLogUserIn: () => void;
+	attemptToLogUserIn: (onSuccess: () => void, onFailure: () => void) => void;
 	adminIsLoggedIn: boolean;
 	logoutAsAdmin: () => void;
 	handleDeleteBook: (book: IBook) => void;
@@ -40,6 +40,7 @@ interface IAppContext {
 	loginForm: ILoginForm;
 	changeLoginFormField: (fieldIdCode: string, value: string) => void;
 	currentUser: IUser;
+	currentUserIsInAccessGroup: (accessGroup: string) => boolean;
 }
 
 interface IAppProvider {
@@ -80,11 +81,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 		})();
 	};
 
-	useEffect(() => {
-		loadBooks();
-	}, []);
-
-	useEffect(() => {
+	const getCurrentUser = () => {
 		(async () => {
 			try {
 				const currentUser = (
@@ -97,6 +94,14 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 				console.log(`ERROR: ${e.message}`);
 			}
 		})();
+	}
+
+	useEffect(() => {
+		loadBooks();
+	}, []);
+
+	useEffect(() => {
+		getCurrentUser();
 	}, []);
 
 	const handleCancelEditBook = (book: IBook) => {
@@ -117,7 +122,10 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 		setBooks([...books]);
 	};
 
-	const attemptToLogUserIn = async () => {
+	const attemptToLogUserIn = async (
+	onSuccess: () => void,
+		onFailure: () => void
+	) => {
 		try {
 			const response = await axios.post(
 				`${backendUrl}/login`,
@@ -133,8 +141,10 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 				}
 			);
 			setCurrentUser(response.data);
+			onSuccess();
 		} catch (e: any) {
 			console.log(`ERROR: ${e.message}`);
+			onFailure();
 		}
 	};
 
@@ -213,10 +223,10 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 		(async () => {
 			try {
 				resetAllBooks();
-				setAdminIsLoggedIn(false);
 				await axios.get(`${backendUrl}/logout`, {
 					withCredentials: true,
 				});
+				getCurrentUser();
 			} catch (e: any) {
 				console.log('GENERAL ERROR');
 			}
@@ -270,6 +280,10 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 		setLoginForm({ ...loginForm });
 	};
 
+	const currentUserIsInAccessGroup = (accessGroup: string) => {
+		return currentUser.accessGroups.includes(accessGroup);
+	};
+
 	return (
 		<AppContext.Provider
 			value={{
@@ -290,7 +304,8 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 				handleSaveNewBook,
 				loginForm,
 				changeLoginFormField,
-				currentUser
+				currentUser,
+				currentUserIsInAccessGroup
 			}}
 		>
 			{children}
