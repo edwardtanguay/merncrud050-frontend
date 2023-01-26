@@ -7,12 +7,12 @@ import { PageLogin } from './pages/PageLogin';
 import { PageLogout } from './pages/PageLogout';
 
 function App() {
-	const { adminIsLoggedIn, currentUser, currentUserIsInAccessGroup } =
+	const { appTitle, currentUser, loginForm, currentUserIsInAccessGroup } =
 		useContext(AppContext);
 
 	return (
 		<div className="App">
-			<h1>Book Site</h1>
+			<h1>{appTitle} - {loginForm.fields.username}</h1>
 			<div className="userInfo">
 				Logged in:{' '}
 				<span>
