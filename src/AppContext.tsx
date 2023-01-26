@@ -10,6 +10,7 @@ import {
 	ILoginFields,
 	IUser,
 	blankUser,
+	anonymousUser,
 } from './interfaces';
 import * as tools from './tools';
 import { cloneDeep } from 'lodash-es';
@@ -57,9 +58,9 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 	const [appTitle, setAppTitle] = useState('Book Site');
 	const [adminIsLoggedIn, setAdminIsLoggedIn] = useState(false);
 	const [isAdding, setIsAdding] = useState(false);
-	const [newBook, setNewBook] = useState<IOriginalEditFields>(blankNewBook);
+	const [newBook, setNewBook] = useState<IOriginalEditFields>(cloneDeep(blankNewBook));
 	const [loginForm, setLoginForm] = useState<ILoginForm>(cloneDeep(blankLoginForm));
-	const [currentUser, setCurrentUser] = useState<IUser>(blankUser);
+	const [currentUser, setCurrentUser] = useState<IUser>(cloneDeep(anonymousUser));
 
 	const loadBooks = () => {
 		(async () => {
@@ -146,6 +147,8 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 			onSuccess();
 		} catch (e: any) {
 			console.log(`ERROR: ${e.message}`);
+			loginForm.message = 'bad login';
+			setLoginForm(cloneDeep(loginForm));
 			onFailure();
 		}
 	};
@@ -222,6 +225,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 	};
 
 	const logUserOut = () => {
+		setCurrentUser(cloneDeep(anonymousUser));
 		(async () => {
 			try {
 				resetAllBooks();

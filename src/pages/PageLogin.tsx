@@ -46,7 +46,7 @@ export const PageLogin = () => {
 					</div>
 
 					<div className="buttonArea">
-						<div className="message"></div>
+						<div className="message">{loginForm.message}</div>
 						<button type="button" onClick={attemptToLogUserInAndresponse}>Submit</button>
 					</div>
 				</fieldset>

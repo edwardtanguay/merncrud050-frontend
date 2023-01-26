@@ -56,3 +56,11 @@ export const blankUser = {
 	lastName: '',
 	accessGroups: [],
 }
+
+export const anonymousUser = {
+	_id: '',
+	username: 'anonymousUser',
+	firstName: '',
+	lastName: '',
+	accessGroups: [],
+}

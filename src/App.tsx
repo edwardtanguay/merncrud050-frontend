@@ -19,7 +19,7 @@ function App() {
 				<div className="userInfo">
 					Logged in:{' '}
 					<span>
-						{currentUser.firstName} {currentUser.lastName} 
+						{currentUser.firstName} {currentUser.lastName}
 					</span>
 				</div>
 			)}
