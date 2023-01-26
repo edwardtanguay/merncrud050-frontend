@@ -54,7 +54,7 @@ export const AppContext = createContext<IAppContext>({} as IAppContext);
 
 export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 	const [books, setBooks] = useState<IBook[]>([]);
-	const [appTitle, setAppTitle] = useState('Book Site II');
+	const [appTitle, setAppTitle] = useState('Book Site');
 	const [adminIsLoggedIn, setAdminIsLoggedIn] = useState(false);
 	const [isAdding, setIsAdding] = useState(false);
 	const [newBook, setNewBook] = useState<IOriginalEditFields>(blankNewBook);
@@ -78,7 +78,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 				};
 				_books.push(_book);
 			});
-			setBooks(_books);
+			setBooks(cloneDeep(_books));
 		})();
 	};
 
@@ -90,7 +90,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 						withCredentials: true,
 					})
 				).data;
-				setCurrentUser(currentUser);
+				setCurrentUser(cloneDeep(currentUser));
 			} catch (e: any) {
 				console.log(`ERROR: ${e.message}`);
 			}
@@ -113,14 +113,14 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 			description: book.description,
 			language: book.language,
 		};
-		setBooks([...books]);
+		setBooks(cloneDeep(books));
 	};
 
 	const resetAllBooks = () => {
 		for (const book of books) {
 			book.isBeingEdited = false;
 		}
-		setBooks([...books]);
+		setBooks(cloneDeep(books));
 	};
 
 	const attemptToLogUserIn = async (
@@ -142,7 +142,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 				}
 			);
 			setLoginForm(cloneDeep(blankLoginForm));
-			setCurrentUser(response.data);
+			setCurrentUser(cloneDeep(response.data));
 			onSuccess();
 		} catch (e: any) {
 			console.log(`ERROR: ${e.message}`);
@@ -171,7 +171,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 			book.languageText = tools.capitalizeFirstLetter(
 				book.originalEditFields.language
 			);
-			setBooks([...books]);
+			setBooks(cloneDeep(books));
 			book.isBeingEdited = false;
 		} catch (e: any) {
 			switch (e.code) {
@@ -193,7 +193,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 	) => {
 		book.originalEditFields[fieldIdCode as keyof IOriginalEditFields] =
 			value;
-		setBooks([...books]);
+		setBooks(cloneDeep(books));
 	};
 
 	const handleDeleteBook = async (book: IBook) => {
@@ -202,7 +202,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 				withCredentials: true,
 			});
 			const _books = books.filter((m: IBook) => m._id !== book._id);
-			setBooks(_books);
+			setBooks(cloneDeep(_books));
 		} catch (e: any) {
 			switch (e.code) {
 				case 'ERR_BAD_REQUEST':
@@ -218,7 +218,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 
 	const handleEditBook = (book: IBook) => {
 		book.isBeingEdited = true;
-		setBooks([...books]);
+		setBooks(cloneDeep(books));
 	};
 
 	const logUserOut = () => {
@@ -236,7 +236,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 	};
 
 	const handleToggleAddBook = () => {
-		setNewBook({ ...blankNewBook });
+		setNewBook(cloneDeep(blankNewBook));
 		setIsAdding(!isAdding);
 	};
 
@@ -246,7 +246,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 		value: string
 	) => {
 		newBook[fieldIdCode as keyof IOriginalEditFields] = value;
-		setNewBook({ ...newBook });
+		setNewBook(cloneDeep(newBook));
 	};
 
 	const handleSaveNewBook = async () => {
@@ -270,7 +270,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 			// if it saved in backend, then update on frontend
 			loadBooks();
 			setIsAdding(false);
-			setNewBook({ ...blankNewBook });
+			setNewBook(cloneDeep(blankNewBook));
 		} catch (e: any) {
 			console.log('GENERAL ERROR');
 			setAdminIsLoggedIn(false);
@@ -279,7 +279,7 @@ export const AppProvider: React.FC<IAppProvider> = ({ children }) => {
 
 	const changeLoginFormField = (fieldIdCode: string, value: string) => {
 		loginForm.fields[fieldIdCode as keyof ILoginFields] = value;
-		setLoginForm({ ...loginForm });
+		setLoginForm(cloneDeep(loginForm));
 	};
 
 	const currentUserIsInAccessGroup = (accessGroup: string) => {

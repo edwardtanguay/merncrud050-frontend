@@ -12,14 +12,17 @@ function App() {
 
 	return (
 		<div className="App">
-			<h1>{appTitle} - {loginForm.fields.username}</h1>
-			<div className="userInfo">
-				Logged in:{' '}
-				<span>
-					{currentUser.firstName} {currentUser.lastName} (
-					{currentUser.accessGroups.join(', ')})
-				</span>
-			</div>
+			<h1>
+				{appTitle}
+			</h1>
+			{currentUserIsInAccessGroup('loggedInUsers') && (
+				<div className="userInfo">
+					Logged in:{' '}
+					<span>
+						{currentUser.firstName} {currentUser.lastName} 
+					</span>
+				</div>
+			)}
 			<nav>
 				<NavLink to="/books">Books</NavLink>
 				{currentUserIsInAccessGroup('loggedInUsers') ? (
